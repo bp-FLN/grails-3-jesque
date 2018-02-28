@@ -81,6 +81,7 @@ grails:
         schedulerThreadActive: true
         startPaused: false
         autoFlush: true
+        nextQueueStrategy: RESET_TO_HIGHEST_PRIORITY // or DRAIN_WHILE_MESSAGES_EXISTS
         workers:
             DemoJesqueJobPool:
                 queueNames:
