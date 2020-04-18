@@ -142,7 +142,7 @@ class JesqueGrailsPlugin extends Plugin {
             bean.scope = "prototype"
         }
 
-        log.info "Wired job beans for $jobClass.fullName"
+        log.debug "Wired job beans for $jobClass.fullName"
     }
 
     void doWithDynamicMethods() {
