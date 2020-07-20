@@ -174,6 +174,10 @@ Note: only changes made by uberall are listed here.
 * 1.3.1-UBERALL
     * statically compile JesqueService and GrailsJesqueJobFactory
     * update to jesque:2.1.6-UBERALL
+* 1.3.2-UBERALL
+    * add support for pausing all workers of a specific host
+    * allow renaming the worker thread name (via `threadNameChangingEnabled`)
+    * overhauled stopAllWorkers(); new config items: `shutdownSoftDelay` and `shutdownHardDelay`
 
 License
 -------

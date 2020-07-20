@@ -16,7 +16,7 @@ plugins {
 	id "com.jfrog.bintray" version "1.2"
 }
 
-version "1.3.1-UBERALL"
+version "1.3.2-UBERALL"
 group "org.grails.plugins"
 
 apply plugin: 'io.spring.dependency-management'
@@ -86,9 +86,9 @@ bintray {
 		userOrg = 'uberall'
 		name = "jesque"
 		desc = "Grails Jesque Plugin"
-		websiteUrl = "http://grails.org/plugin/grails-jesque"
-		issueTrackerUrl = "https://github.com/uberall/grails-jesque/issues"
-		vcsUrl = "https://github.com/uberall/grails-jesque"
+		websiteUrl = "https://github.com/uberall/grails-3-jesque"
+		issueTrackerUrl = "https://github.com/uberall/grails-3-jesque/issues"
+		vcsUrl = "https://github.com/uberall/grails-3-jesque"
 		licenses = ['Apache-2.0']
 		publicDownloadNumbers = true
 	}
