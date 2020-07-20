@@ -22,6 +22,8 @@ import org.springframework.core.Ordered
 import redis.clients.jedis.Jedis
 import redis.clients.util.Pool
 
+import static net.greghaines.jesque.utils.ResqueConstants.ADMIN_CHANNEL
+
 @Slf4j
 @CompileStatic
 class JesqueService implements ApplicationListener<ContextClosedEvent>, Ordered {
@@ -235,6 +237,8 @@ class JesqueService implements ApplicationListener<ContextClosedEvent>, Ordered 
         // create an Admin for this worker (makes it possible to administer across a cluster)
         Admin admin = new AdminPoolImpl(jesqueConfig, redisPool)
         admin.setWorker(worker)
+        String hostname = InetAddress.getLocalHost().getHostName()
+        admin.setChannels([ADMIN_CHANNEL, "admin-$hostname".toString()] as Set)
 
         Boolean autoFlush = true
         def autoFlushFromConfig = grailsApplication.config.grails.jesque.autoFlush
@@ -357,27 +361,29 @@ class JesqueService implements ApplicationListener<ContextClosedEvent>, Ordered 
     }
 
     void resumeAllWorkersOnThisNode() {
-        log.info "Resuming all ${workers.size()} jesque workers on this node"
-
         List<Worker> workersToPause = workers.collect { it }
         workersToPause.each { Worker worker ->
-            log.debug "Resuming worker processing queues: ${worker.queues}"
             worker.togglePause(false)
         }
     }
 
     void pauseAllWorkersInCluster() {
-        log.debug "Pausing all workers in the cluster"
         jesqueAdminClient.togglePausedWorkers(true)
     }
 
+    void pauseAllWorkersInChannel(String channel) {
+        jesqueAdminClient.togglePausedWorkers(channel, true)
+    }
+
     void resumeAllWorkersInCluster() {
-        log.debug "Resuming all workers in the cluster"
         jesqueAdminClient.togglePausedWorkers(false)
     }
 
+    void resumeAllWorkersInChannel(String channel) {
+        jesqueAdminClient.togglePausedWorkers(channel, false)
+    }
+
     void shutdownAllWorkersInCluster() {
-        log.debug "Shutting down all workers in the cluster"
         jesqueAdminClient.shutdownWorkers(true)
     }
 
