@@ -1,23 +1,10 @@
 Grails Jesque
 =============
 
-[![Build Status](https://travis-ci.org/Grails-Plugin-Consortium/grails-jesque.svg?branch=master)](https://travis-ci.org/Grails-Plugin-Consortium/grails-jesque)
+This is a fork of the jesque addon for grails 3: https://github.com/Grails-Plugin-Consortium/grails-jesque
 
-Jesque is an implementation of [Resque](https://github.com/resque/resque) in [Java](http://www.oracle.com/technetwork/java/index.html).
-It is fully-interoperable with the [Ruby](http://www.ruby-lang.org/en/) and [Node.js](http://nodejs.org/) ([Coffee-Resque](https://github.com/technoweenie/coffee-resque)) implementations.
+See Release Notes below for a detailed list of changes.
 
-The grails jesque plugin uses [jesque](https://github.com/gresrun/jesque) and the grails redis plugin as a dependency.
-While it uses jesque for the core functionality it makes it groovier to use in grails.
-
-There is also a grails [jesque-web](https://github.com/michaelcameron/grails-jesque-web) plugin initially ported from the [jesque-web](https://github.com/gresrun/jesque-web) spring-mvc app, which itself was based on the Sinatra web app resque-web in [resque](https://github.com/resque/resque).
-Either UI will allow you to see what's in your queues and view and re-process failed messages.
-
-A scheduler (a la Quartz) has been added to support scheduled injection of jobs. The syntax is very similar to the grails Quartz plugin. 
-
-
-Demo Project
--------------
-There is a demo project located [in github](https://github.com/Grails-Plugin-Consortium/grails-jesque-demo).
 
 
 How do I use it?
@@ -164,14 +151,6 @@ grails {
  
 *All Listeners have to implement the WorkerListener Interface otherwise they will simply be ignored*
 
-Roadmap
-----
-* Upgrade custom Listener and Worker to grails 3 support
-* Ability to execute methods on services without creating a job object
-* Wrap above ability automatically with annotation and dynamically creating a method with the same name + "Async" suffix
-* Create grails/groovy docs (gdoc?) to extensively document options
-* Dynamic wake time of delayed jobs thread to reduce polling
-
 Release Notes
 ----
 
@@ -199,6 +178,7 @@ Note: only changes made by uberall are listed here.
 License
 -------
 Copyright 2011 Michael Cameron
+Copyright 2020 Uberall GmbH
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
