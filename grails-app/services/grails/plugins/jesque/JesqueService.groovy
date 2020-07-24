@@ -255,6 +255,10 @@ class JesqueService implements ApplicationListener<ContextClosedEvent>, Ordered 
         def workerLifeCycleListener = new WorkerLifecycleListener(this)
         worker.workerEventEmitter.addListener(workerLifeCycleListener, WorkerEvent.WORKER_STOP)
 
+        if (grailsApplication.config.grails.jesque.threadNameChangingEnabled) {
+            worker.setThreadNameChangingEnabled(true)
+        }
+
         def workerThread = new Thread(worker)
         workerThread.start()
 

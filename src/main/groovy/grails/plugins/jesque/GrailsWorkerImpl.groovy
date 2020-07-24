@@ -1,5 +1,6 @@
 package grails.plugins.jesque
 
+import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
 import net.greghaines.jesque.Job
@@ -14,6 +15,9 @@ class GrailsWorkerImpl extends WorkerPoolImpl {
 
     @Override
     protected Object execute(final Job job, final String curQueue, final Object instance) throws Exception {
+        if (isThreadNameChangingEnabled()) {
+            renameThread("Processing ${job.className}")
+        }
         log.debug "Executing job ${job.className} with args $job.args from queue $curQueue"
         if (instance instanceof WorkerAware) {
             ((WorkerAware) instance).setWorker(this)
@@ -22,4 +26,9 @@ class GrailsWorkerImpl extends WorkerPoolImpl {
         instance.perform(*job.args)
     }
 
+    @Override
+    @CompileStatic
+    protected void renameThread(final String msg) {
+        Thread.currentThread().setName("Worker-" + this.workerId + " " + msg)
+    }
 }
