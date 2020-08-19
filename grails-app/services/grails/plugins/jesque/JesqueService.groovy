@@ -175,7 +175,7 @@ class JesqueService implements ApplicationListener<ContextClosedEvent>, Ordered 
             [queue, getDelayedQueueName(queue)]
         }
 
-        log.info "Starting worker processing queueus: ${allQueues}"
+        log.info "Starting worker processing queues: ${allQueues}"
 
         Class workerClass = GrailsWorkerImpl
         def customWorkerClass = grailsApplication.config.grails.jesque.custom.worker.clazz
@@ -279,20 +279,44 @@ class JesqueService implements ApplicationListener<ContextClosedEvent>, Ordered 
         this.stopAllWorkers()
     }
 
+    @CompileDynamic
     void stopAllWorkers() {
         log.info "stopping ${workers.size()} jesque workers"
 
-        List<Worker> workersToRemove = workers.collect { it }
-        workersToRemove*.end(false)
+        workers*.end(false)
 
-        workersToRemove.each { Worker worker ->
-            try {
-                log.info "stopping worker $worker"
-                worker.end(true)
-                worker.join(10000)
-            } catch (Exception exception) {
-                log.error "stopping jesque worker failed", exception
+        Closure countdown = { int seconds ->
+            for (int i = seconds; i > 0; i--) {
+                if (workers.isEmpty()) {
+                    break
+                }
+
+                log.info "${workers.size()} workers are still running - $i seconds left"
+                Thread.sleep(1000)
             }
+        }
+
+        def softDelay = 10
+        def softDelayFromConfig = grailsApplication.config.grails.jesque.shutdownSoftDelay
+        if (softDelayFromConfig && softDelayFromConfig.toString().isNumber()) {
+            softDelay = softDelayFromConfig
+        }
+        countdown(softDelay)
+
+        workers.each { worker ->
+            log.info "forcing stop of worker $worker"
+            worker.end(true)
+        }
+
+        def hardDelay = 10
+        def hardDelayFromConfig = grailsApplication.config.grails.jesque.shutdownHardDelay
+        if (hardDelayFromConfig && hardDelayFromConfig.toString().isNumber()) {
+            hardDelay = hardDelayFromConfig
+        }
+        countdown(hardDelay)
+
+        if (!workers.isEmpty()) {
+            log.error "${workers.size()} workers could not be stopped in time!"
         }
     }
 

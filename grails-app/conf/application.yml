@@ -10,6 +10,8 @@ grails:
         startPaused: false
         threadNameChangingEnabled: true
         nextQueueStrategy: DRAIN_WHILE_MESSAGES_EXISTS
+        shutdownSoftDelay = 10
+        shutdownHardDelay = 10
 
 environments:
     test:
