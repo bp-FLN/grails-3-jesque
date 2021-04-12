@@ -13,7 +13,6 @@ buildscript {
 
 plugins {
 	id "io.spring.dependency-management" version "0.5.2.RELEASE"
-	id "com.jfrog.bintray" version "1.2"
 }
 
 version "1.3.2-UBERALL"
@@ -26,9 +25,7 @@ apply plugin: 'idea'
 apply plugin: "spring-boot"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-gsp"
-// Used for publishing to central repository, remove if not needed
-apply from: 'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/grailsCentralPublishing.gradle'
-apply from: 'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/bintrayPublishing.gradle'
+apply plugin: "maven-publish"
 
 ext {
 	grailsVersion = project.grailsVersion
@@ -42,8 +39,14 @@ targetCompatibility = 1.7
 repositories {
 	mavenLocal()
 	mavenCentral()
-	maven { url "http://dl.bintray.com/uberall/maven" }
 	maven { url "https://repo.grails.org/grails/core" }
+	maven {
+		url "https://maven.pkg.github.com/uberall/*"
+		credentials {
+			username = System.getenv("GITHUB_USER")
+			password = System.getenv("GITHUB_TOKEN")
+		}
+	}
 }
 
 dependencyManagement {
@@ -77,21 +80,22 @@ task wrapper(type: Wrapper) {
 	gradleVersion = gradleWrapperVersion
 }
 
-bintray {
-	user = System.getenv("BINTRAY_USER") ?: project.hasProperty("bintrayUser") ? project.bintrayUser : ''
-	key = System.getenv("BINTRAY_KEY") ?: project.hasProperty("bintrayKey") ? project.bintrayKey : ''
-	publications = ['maven']
-	pkg {
-		repo = 'plugins'
-		userOrg = 'uberall'
-		name = "jesque"
-		desc = "Grails Jesque Plugin"
-		websiteUrl = "https://github.com/uberall/grails-3-jesque"
-		issueTrackerUrl = "https://github.com/uberall/grails-3-jesque/issues"
-		vcsUrl = "https://github.com/uberall/grails-3-jesque"
-		licenses = ['Apache-2.0']
-		publicDownloadNumbers = true
-	}
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/uberall/grails-3-jesque")
+            credentials {
+                username = System.getenv("GITHUB_USER") ?: project.findProperty("gpr.user")
+                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key")
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 test {
@@ -100,6 +104,3 @@ test {
 		showStandardStreams = true
 	}
 }
-
-
-bintrayUpload.dependsOn sourcesJar, javadocJar
